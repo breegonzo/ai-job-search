@@ -6,7 +6,7 @@ framework_version: 1.2.0
 
 ## Critical Rules
 
-1. **NO em-dashes (--).**  Use commas, periods, or restructure the sentence instead.
+1. **NO em-dashes (--).**  Use commas, periods, or restructure the sentence instead. This means the literal character sequence `--` (or `---`) too, not just the rendered — glyph: LaTeX ligatures both into an em/en-dash at compile time, so a source file that looks clean of "—" can still fail this rule. Before finalizing, `grep -n -- '--'` the `.tex` file and check every hit; the only legitimate matches are date ranges (`2018--2025`, and even those should be a single ASCII hyphen per `05-cv-templates.md`'s ATS date rule) and LaTeX comments (`% --- Section ---`).
 2. **NO cliches or filler phrases.** Cut: "I am passionate about", "I believe I would be a great fit", "leverage my skills", "hit the ground running", "drive results", "synergies".
 3. **NO generic buzzwords** without concrete backing. Every claim must be supported by a specific example or fact.
 4. **NO apologetic or overly humble language.** Not "I think I could contribute" but "I bring X, demonstrated by Y."
@@ -16,6 +16,25 @@ framework_version: 1.2.0
    - **Flag it:** Combining academic + industry experience into a single claim that implies it was all industry; describing work using the posting's specific terminology when the actual work was adjacent but not the same.
    - **Never:** Claiming experience the candidate doesn't have; implying they worked in a domain they haven't.
    When a bullet falls in the "flag it" zone, present it to the user after drafting with: "This bullet is a stretch because X. Keep, soften, or drop?" If the evaluation experience match score is below 50, warn before proceeding to drafting that extensive reframing would be needed.
+7. **NO AI-sounding prose.** Every CV, cover letter, and application-form answer must read as something a specific person wrote about their own specific experience, not as generic output. Check every draft against the list below before presenting it.
+
+## Avoiding AI-Sounding Language (mandatory self-check)
+
+Run this check on every draft, silently, before presenting it. It is not optional and it is not the same check as rule 1 (em-dashes) or rule 2 (cliches) above, even though it overlaps with both.
+
+**Banned constructions:**
+- **Em-dashes / double-hyphens** (rule 1) — the single most recognizable AI tell. `grep -n -- '--'` every `.tex` file before finalizing.
+- **"Not just X, but Y."** and its variants ("It's not only about X, it's about Y"). Nearly every LLM overuses this construction. If a sentence would fit that template, rewrite it as a plain statement instead.
+- **Throat-clearing transitions:** "It's worth noting that", "It's important to note", "At the end of the day", "In today's fast-paced world/landscape", "When it comes to X". Delete the transition and start with the actual content.
+- **Essay-style connectives stacked at paragraph starts:** "Moreover,", "Furthermore,", "Additionally," used more than once in a document. A cover letter is a person talking, not a five-paragraph essay — most paragraphs need no connective at all.
+- **Rule-of-three overload.** "Clear, concise, and compelling." "Curiosity, critical thinking, and compassion" is fine ONCE because it is the employer's own stated framework — but if every third sentence in a document lands on a neat tricolon, that regularity itself reads as generated. Vary sentence shape; let some sentences be short, some run-on, some a single clause.
+- **Inflated verbs used as filler rather than backed by a fact:** "leverage", "unlock", "elevate", "harness", "empower", "foster" (unless the actual work was literally fostering something specific), "seamless/seamlessly", "robust", "cutting-edge", "game-changing", "unparalleled", "dynamic", "tailor-made". If the sentence works with the inflated verb removed and nothing lost, it was filler.
+- **"Genuinely" - banned outright, any single use (standing preference): flagged as AI slop, not just as a repeated-intensifier problem.** Cut it every time, don't just avoid stacking it. Same treatment applies to the rest of this intensifier family - "genuine", "truly", "deeply", "real" doing repeated emotional emphasis-work across a single document instead of being backed by a specific detail. One real example beats three intensifiers in a row.
+- **"Actually" - banned outright, any single use (standing preference).** Same treatment as "genuinely" above: cut it every time it appears, in CVs, cover letters, outreach messages, and any other drafted or spoken-for-the-user text, not just when stacked.
+- **Symmetric participial-phrase openers stacked across sentences:** "Grounded in X, drawing on Y, and shaped by Z, I..." used more than once in a document is a tell, even though any single instance can be fine prose.
+- **Identical sentence openers across consecutive paragraphs:** three paragraphs in a row starting "I led / I built / I designed" reads as templated, even when each fact is true. Vary the opening structure paragraph to paragraph.
+
+**The test that catches what this list misses:** read the finished paragraph out loud. If it sounds like something a specific person said about their own specific week at work, it passes. If it sounds like a description of that person written by someone who has only read their resume, it doesn't, even if every fact in it is true and grounded. Specificity (a real number, a real name, a real moment) is what makes prose sound human; smoothed-out general competence is what makes it sound generated.
 
 ## Tone
 - **Warm but direct.** Friendly and approachable, but confident without arrogance.

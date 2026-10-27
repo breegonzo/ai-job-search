@@ -28,6 +28,10 @@ Expected output: `Output written on main_<company>_<role>.pdf (2 pages, ...)`. A
 \documentclass[11pt,a4paper,sans]{moderncv}
 \moderncvstyle{banking}
 \moderncvcolor{blue}
+% Suppress moderncv's built-in "N/M" page-number footer (its own documented
+% \nopagenumbers switch). It reserves vertical space at the bottom of every page
+% for a footer most CVs do not need.
+\nopagenumbers
 
 % Force the name and section headings to render in moderncv blue (color1).
 % Default banking leaves them black: moderncvstylebanking.sty's \colorlet
@@ -369,3 +373,115 @@ The section order varies by role type:
 4. Professional Experience (reverse chronological)
 5. Publications & Awards
 6. References
+
+## Additional Layout Guidance
+
+### Flowing-paragraph alternative to bulleted `\cventry` descriptions
+
+Bullets (`\begin{itemize}...\end{itemize}` inside a `\cventry`'s description) are the default and work well. But bulleted sub-lists can look visually uneven across entries — inconsistent hanging-indent, markers that don't quite line up entry to entry — especially once a CV has several multi-item roles. If that becomes a real complaint (not a hypothetical one), the fix is not to fight `moderncv`'s list internals with a package like `enumitem`: a blanket `\setlist` redefinition can silently break `\cventry`'s own internal table alignment (shows up as a new `Overfull \hbox ... in alignment` warning, distinct from the harmless `in paragraph` ones below) and is not worth the risk for a cosmetic complaint.
+
+The clean fix is to drop the bullets and write the same content as short flowing paragraphs instead, separated by a manual line break with a little vertical space:
+
+```latex
+\item{\cventry{YEAR-YEAR}{Role Title}{Organization}{Location}{}{\vspace{2pt}
+First achievement sentence, written as a complete sentence rather than a bullet fragment.
+\\[2pt]
+Second achievement sentence, same pattern. \textbf{A bold lead-in label:} still works fine as the opening of a sentence.
+\\[2pt]
+Third achievement sentence.
+}}
+```
+
+**Critical gotcha: never use `\par` (or a blank line, which is the same thing) inside a `\cventry` argument.** `\cventry`'s description argument is not a `\long` macro argument, so a `\par` inside it throws `Paragraph ended before \cventry was complete` and kills the compile. Use `\\[Npt]` (an explicit line break with vertical space) between sentences instead — it reads the same on the page without ending the paragraph at the TeX level.
+
+This is a legitimate style choice for a senior candidate (flowing narrative rather than fragment bullets), not a downgrade — but it is a document-wide look, not a per-entry mix. If you switch one `\cventry` to this pattern, switch all of them in that CV so the style is consistent top to bottom. Core Competencies and the top-level Professional Experience/Education lists keep their normal `itemize` bullets; this pattern only applies to prose *inside* a `\cventry`'s own description.
+
+### Entries with no employer (sabbatical, gap year, personal project) — confirmed rendering bug
+
+`\cventry{years}{title}{employer}{location}{grade}{description}`'s banking-style row 1 (the bold company/location line) is skipped only when **both** `employer` and `location` are empty — not when just one is. Confirmed in `moderncvbodyiii.sty`:
+
+```latex
+\ifboolexpr{test {\ifstrempty{#4}} and test {\ifstrempty{#5}}}
+  {}                              % skip row 1 only if BOTH are empty
+  {{\bfseries #4} & {\bfseries #5}\\}
+```
+
+A sabbatical, gap year, or personal project entry naturally has no employer but does have a location — write it the obvious way, `\cventry{YEAR-YEAR}{Sabbatical}{}{City, Country}{}{...}`, and row 1 still renders, with an empty bold cell on the left and the location alone on the right. Next to every other entry's bold-left/bold-right pair, this reads as visibly lopsided — confirmed by inspection, not a hypothetical.
+
+**Fix: put the location in the employer slot (`#4`) and leave the location slot (`#5`) empty.**
+
+```latex
+% WRONG - blank bold cell on the left, location floats alone on the right
+\cventry{YEAR-YEAR}{Sabbatical}{}{City, Country}{}{...}
+
+% RIGHT - location reads as the bold header, consistent with every other entry
+\cventry{YEAR-YEAR}{Sabbatical}{City, Country}{}{}{...}
+```
+
+Same fix applies to any entry that's genuinely location-only (no organization to name).
+
+### Always Fill Both Pages (mandatory)
+
+A CV that compiles to 2 pages but leaves the bottom third or more of page 2 blank is a **failure state**, exactly like overflowing to 3 pages — it reads as thin, not concise, and a mostly-empty page 2 stands out immediately next to the fully-packed CVs it's competing against. Check the actual whitespace after every compile, not just the page count.
+
+**Content comes first, always.** In order of preference:
+
+1. **Add back a bullet under Professional Experience that was cut for space but is still relevant.** `01-candidate-profile.md` documents more detail per role than any single tailored CV uses — check it for an engagement, metric, or responsibility that didn't make the first draft.
+2. **Deepen an existing bullet with a genuine specific it's currently missing** — a team size, a stakeholder group, a concrete deliverable — rather than adding a whole new bullet, if the source material supports it inline.
+3. **Add a Core Competencies / Skills item** that's true and relevant but wasn't included yet. Five items is a floor, not a ceiling, when there's real material and space to use.
+4. **Restore or add an Independent Projects, Awards, or Publications entry** that's documented in `01-candidate-profile.md` but was left out of this draft.
+
+**Never invent a new employer, project, metric, or skill to fill space.** Every addition still has to clear the same Grounding Audit as everything else in the CV — sourced from `01-candidate-profile.md`, the master CV, or `CLAUDE.md`, never fabricated to hit a page target.
+
+### Typographic stretch (once content is genuinely exhausted)
+
+If steps 1–4 above are truly exhausted — every real, relevant fact from `01-candidate-profile.md` is already in the document — and page 2 is still thin, it's legitimate to let the same true content breathe more on the page. This is standard resume typesetting practice, not padding: nothing new is claimed, the existing words simply take up the space they're given. Apply these in order, recompiling and re-inspecting after each one, and stop as soon as the page looks genuinely full rather than pushing further:
+
+1. **Loosen the geometry first.** Drop `\usepackage[scale=0.80]{geometry}` in `0.01` steps (`0.79`, `0.78`, `0.77`, ...) — recompile at each step, since the exact safe floor before 3-page overflow depends on how much content the specific CV holds and has to be found by testing, not assumed from a prior document. In testing on a content-heavy CV the floor landed at `0.77`; a lighter CV may tolerate `0.76` or lower. A smaller scale value means a narrower, shorter text block — the same words wrap onto more lines and the whole document naturally spreads across more vertical space. This is the highest-leverage lever and the one to try first.
+2. **Open up inter-entry and inter-sentence spacing.** Bump the `\vspace{3pt}`/`\vspace{6pt}` between top-level `\cventry` blocks, the `\\[Npt]` between sentences inside a flowing-paragraph entry (see step 3), and the `\vspace{1pt}` right after each `\section{...}`. Test each in small increments (a point or two at a time) the same way as geometry — this also has a real ceiling per document, found by recompiling after each bump, not a fixed safe number to reuse across CVs.
+3. **Convert bulleted `\cventry` descriptions to flowing paragraphs.** See "Flowing-paragraph alternative to bulleted `\cventry` descriptions" under Professional Experience above. This was the single highest-yield lever found in practice: full sentences with `\\[Npt]` breaks between them consistently use noticeably more vertical space than the same content as tight bulleted fragments, because each sentence gets its own line-break with padding rather than sharing a hanging-indent block. It also happens to read as more senior/narrative and sidesteps any complaint about inconsistent bullet-marker alignment. Apply it document-wide (every `\cventry`), not to one entry only.
+4. **Step the base font up one size.** `\documentclass[11pt,...]` to `[12pt,...]` is a safe, discrete jump (moderncv/LaTeX base classes support 10pt/11pt/12pt cleanly; don't hand-roll an in-between size via low-level font primitives). Try this after 1-3, since it affects every line at once and is the hardest to undo gracefully if it overshoots into 3 pages. In practice this was the one lever that reliably tipped a near-full 2-page document into 3 pages — expect to need to revert it if the earlier steps already closed most of the gap.
+5. **Widen the name and section-heading fonts slightly** as a last, small touch if the page still reads thin at the very top or at each section break — e.g. nudge `\namefont`'s `\fontsize{34}{36}` up a point or two, or add `\vspace{2pt}` before each `\section`.
+
+**Do not reach for `enumitem` or any other list-spacing package to solve this.** A blanket `\setlist` redefinition can silently break `\cventry`'s own internal table alignment - it showed up in testing as a new `Overfull \hbox ... in alignment` warning (distinct from the harmless `in paragraph` ones) and pushed the document to 3 pages, for no net gain over steps 1-2 alone. If bullet spacing/alignment specifically is the complaint, step 3 (drop the bullets) is the answer, not a package that fights moderncv's own internals.
+
+**`\needspace{N\baselineskip}` before a long `\cventry` is load-bearing once the document is near its page limit - don't remove it while hunting for more room.** It looks like dead weight (it doesn't add content), but removing it to let a block split "naturally" across the page boundary was tested and made things worse, not better: it triggered the same `Overfull \hbox ... in alignment` symptom as the enumitem detour and pushed the document to 3 pages instead of freeing space. If a `\needspace` is already sitting in a working 2-page document, treat it as fixed and vary other levers around it.
+
+**How to recognize the genuine ceiling, not just a bad guess:** after working through steps 1-5 in small increments, if adding even one more small increment anywhere (a couple of points of spacing, a 0.01 tick of geometry scale) tips the document to 3 pages, that is the real per-document ceiling, not a sign to try harder with a bigger jump. Confirm it by testing one small step at a time rather than concluding from a single failed attempt - but once confirmed, stop and report it honestly (see the guardrails below) rather than continuing to guess at combinations.
+
+**Guardrails, every time:**
+- Recompile after each change and re-run the full Compile-and-Inspect Loop (page count, no orphaned entries, no awkward gaps) — a spacing fix that solves thinness can just as easily introduce a new orphan or push the document to 3 pages.
+- Stop as soon as it looks right. The goal is a page that reads as naturally full, not one where the extra air is visually obvious — if a reader would notice the spacing looks unusual, it's overdone. Undo one step if so.
+- Never loosen spacing enough to trigger new `Overfull \hbox` warnings or visibly ragged text — check the compile log, not just the page count.
+- This is still secondary to content. If a page needs heavy typographic stretching to look full, that's itself a signal `01-candidate-profile.md` is thin for this candidate at this level and could use more real detail — say so, the same as the content-exhaustion case below.
+
+If even typographic stretch can't close the gap without looking artificial, say so to the user rather than pushing further — that is itself useful signal that `01-candidate-profile.md` needs more detail added (suggest `/setup --section experience` or a direct conversation to enrich it).
+
+This rule applies to `cv/main_example.tex` (the master reference) exactly as much as to a tailored `cv/main_<company>_<role>.tex` — a thin master CV means every tailored CV drafted from it starts thin too.
+
+### Relevance-weighted cutting (the right way to shrink a CV)
+
+**Cut by signal, not by section.** Static priority lists ("remove oldest education first, then shorten the earliest role...") are wrong when a relevant "lower-priority" item is competing with an irrelevant "higher-priority" item. An older-role bullet that speaks directly to the posting is worth more than a recent-role bullet that does not.
+
+For every candidate line, score three things:
+
+1. **Relevance to THIS posting** — does the line hit a named tool, keyword, or stated responsibility in the job ad?
+2. **Uniqueness** — is it the only place this claim appears, or is it duplicated elsewhere in the CV?
+3. **Narrative load** — does the cover letter depend on it? If cutting the line would force you to rewrite a cover-letter paragraph, it is load-bearing.
+
+Cut the lowest-total-score line first, regardless of which section it sits in.
+
+### Practical order of cuts (easiest → last resort)
+
+1. **Redundancy.** If an achievement appears in both Core Competencies AND a role bullet, the Core Competencies version is usually the cleaner cut (the experience bullet is more concrete evidence).
+2. **Profile-statement fluff.** A sentence that just restates what Publications or Skills will show. ("Peer-reviewed publications on X..." is already a Publications entry — profile can claim it once and stop.)
+3. **Low-relevance experience bullets.** A bullet about work that does not touch posting keywords, wherever it sits. This cuts across sections before touching the structural list.
+4. **Low-relevance supporting content.** An older-role bullet that does not speak to the target role. A certification that does not touch the posting's stack. A language entry that can be condensed to one line.
+5. **Low-relevance publications.** Keep 1-2 publications that best match the posting. Cut the rest before touching experience bullets.
+6. **Last-resort structural cuts.** Oldest education entry, tightening an older role to 2 bullets, collapsing Certifications into a single line. These only happen if the relevance-weighted cuts above have already been exhausted.
+
+### Pitfalls to avoid
+
+- Do not mechanically cut from the bottom of a static section list without checking relevance. "Cut the oldest role first" is wrong if that role is literally about the skill the posting asks for.
+- Do not cut the one concrete example the cover letter leans on. Relevance is measured against the cover letter you wrote, not just the job posting — interviewers will have read both.
+- Do not cut to fit if the fit is borderline (2.02 pages). Prefer `\enlargethispage{2-3\baselineskip}` on a late section for near-misses; reserve content cuts for genuine overflow (content on page 3 that is more than a single trailing section).

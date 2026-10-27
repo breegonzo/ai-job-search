@@ -59,7 +59,9 @@ After presenting the evaluation, ask the user:
 
 ---
 
-## Step 2: DRAFTER - Draft CV + Cover Letter
+## Step 2: DRAFTER - Draft CV (+ Cover Letter, opt-in only)
+
+**Default: draft the CV only. Do NOT draft a cover letter unless the user explicitly asks for one on this run** ("also do a cover letter", "and the letter too", etc.) — a bare `/apply <posting>` or "let's go for X" is not that ask. Every "both documents/drafts/files" reference in Steps 2-6 below means "the CV, plus the cover letter if one was requested" — when no cover letter was requested, skip every cover-letter-specific action in those steps (drafting it, reviewing it, compiling it, listing it in Files Created) without asking again first. If the user asks for a cover letter later, on this same posting, run just the Cover Letter subsection of this step plus its own pass through Steps 3-6, without re-doing the CV.
 
 You already have `01-candidate-profile.md` and `04-job-evaluation.md` in context from Step 1. **Do not re-read them.**
 
@@ -235,12 +237,23 @@ Read both PDFs via the Read tool and verify:
 - [ ] Exactly 2 pages (not 1, not 3)
 - [ ] No orphaned `\cventry` titles — a job/education title line must never sit alone at the bottom of page 1 with its bullets on page 2. This is the most common failure.
 - [ ] Section headings are not isolated at the top of page 2 with only 1-2 lines below
-- [ ] No awkward whitespace gaps
+- [ ] No awkward whitespace gaps, and page 2 is substantially full — not just 2 pages on the page counter but thin at the bottom. See `05-cv-templates.md` → "Always Fill Both Pages" for how to add real content rather than stretching spacing
 
 **Cover letter (`cover_letters/cover_<company>_<role>.pdf`):**
 - [ ] Exactly 1 page
 - [ ] Signature block visible, not cut off or pushed to a second page
 - [ ] Bullet list font matches surrounding body text (both should be Raleway-Medium)
+
+### 5b-i. Fill-Both-Pages Pass (MANDATORY — run on every CV, not just when asked)
+
+This is not optional polish. After the CV first compiles to 2 pages, look at each page and estimate how full it is (eyeball percentage of the printable area actually covered by text, top to bottom). **If either page reads as less than ~80% full, work through `05-cv-templates.md` → "Always Fill Both Pages" and its "Typographic stretch" subsection in order, every time**, before presenting the CV to the user:
+
+1. Content first (`01-candidate-profile.md` has more than made it in — check for a cut bullet, a missing specific, an unused Independent Projects/Awards/Publications entry).
+2. If content is genuinely exhausted, convert bulleted `\cventry` descriptions to flowing paragraphs (see "Flowing-paragraph alternative to bulleted `\cventry` descriptions").
+3. Then typographic stretch in order: geometry scale, inter-entry/inter-sentence spacing, base font size as a later step.
+4. `\nopagenumbers` is already standard in the Document Structure template — confirm it's present rather than re-adding it.
+
+Recompile and re-run the whole 5b checklist after every change in this pass — a fix for thinness can just as easily introduce a new orphan or push the document to 3 pages, and each geometry/spacing increment has a real ceiling before it overflows (found by testing, not assumed: expect to iterate by 0.01 steps on geometry scale and a couple of points on spacing before finding the largest safe value). Stop as soon as the page reads as genuinely full — don't keep pushing past that looking for a perfect 100%. If both pages are still visibly thin after exhausting every step, say so plainly in the Step 6 report rather than silently accepting it — that is a signal `01-candidate-profile.md` needs more real detail, not a failure to hide.
 
 ### 5c. Iterate until clean
 
@@ -323,7 +336,9 @@ List the files written:
 - `cv/main_<company>_<role><CV_EXT>`
 - `cover_letters/cover_<company>_<role><COVER_EXT>`
 
-Tell the user: "Both files are ready for your review. Open them to check the final output before compiling."
+**Also copy the compiled PDFs to a local per-application folder (optional):** `~/Documents/Job Search/<Company>/`, creating the company subfolder if it doesn't exist (use the posting's company name as written, not the filename-normalized version). Name the copies `<First>_<Last>_Resume.pdf` and `<First>_<Last>_Cover_Letter.pdf` (underscore-separated; no spaces). Overwrite on a redraft; this is a copy of the final PDF, not the LaTeX source. Only copy files that compiled clean in Step 5 — never a broken or intermediate PDF.
+
+Tell the user: "Both files are ready for your review. Open them to check the final output before compiling." Also confirm the copy location in the same message.
 
 ### Step 6b: Record the Application
 
@@ -366,3 +381,17 @@ Check whether the posting or the portal it came from asks for free-text fields t
 ### Next Steps
 - **Submitted?** `/outcome <company>` moves the `drafted` row to `applied` and starts the per-application record that `/setup` later uses to calibrate the fit framework.
 - **Interview scheduled?** `/interview` builds a stage-specific prep pack from this posting and the documents you just created.
+
+---
+
+## Step 7: LinkedIn Outreach
+
+Run this step automatically after Step 6b — it is a standing part of `/apply`, not something to ask permission to attempt (it runs every time a resume comes out of this workflow). Read `.claude/skills/job-application-assistant/10-linkedin-outreach.md` and follow it exactly:
+
+1. Search LinkedIn for the likely hiring/recruiting manager at `<company>` and for second-degree connections there, using the Browser pane on the user's own logged-in session — never an automation/scraper tool.
+2. Report every finding (contact + mutuals) to the user before drafting anything.
+3. Draft short, application-specific outreach notes once the user has picked who (beyond the default hiring-manager contact) to reach.
+4. **Send nothing without explicit per-message approval in chat**, even though this step itself runs by default — the research and drafting are automatic, the send never is.
+5. Log whatever was sent (or explicitly declined) back into the `job_search_tracker.csv` row's `contact_person`/`notes` columns.
+
+If no plausible hiring-manager contact can be found, say so plainly rather than guessing at a name.

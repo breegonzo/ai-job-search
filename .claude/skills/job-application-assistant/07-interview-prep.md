@@ -56,30 +56,29 @@ Keep answers to 1-2 minutes. Be specific. End with what you learned or would do 
 ### "Why this company specifically?"
 > Customize per company. Must reference: specific projects, company values, market position, or team structure. Never give a generic answer.
 
-## Questions You Should Ask Interviewers
+## Self-Introduction Framework (VGPS)
 
-### About the Role
-- "What does a typical week look like in this role?"
-- "What would success look like in the first 6 months?"
-- "What's the biggest challenge the team is facing right now?"
+- **Vision:** what you want to build or change (what you want to build or change)
+- **Gratitude:** "I get to spend my days helping ___ do ___"
+- **Profile:** the literal facts - role, company, what you actually build/own
+- **Service:** who you serve, and what it looks like when the work goes well
 
-### About the Team
-- "How big is the team, and how do you divide work?"
-- "What does the development/project lifecycle look like, from idea to production?"
-- "How do you onboard new team members?"
+Keep it to 30-60 seconds, hook in the first sentence, then tie the close to the specific role/company in the room. Customize it per company; never give the generic version live.
 
-### About Tech & Growth
-- "What's your current tech stack for [relevant area]?"
-- "Is there room to grow into more architectural or strategic decisions?"
-- "How does the team stay current with new tools and methods?"
+## Questions You Should Ask Interviewers (3C Framework)
 
-### About Culture (use these to prevent disappointment)
-- "How would you describe the team culture?"
-- "What does professional development look like here?"
-- "Is there flexibility for remote/hybrid work?"
-- "What's the balance between development/new projects and maintenance work?"
-- "How would you describe the leadership style in this team?"
-- "What do people who thrive here have in common?"
+The "any questions for us?" moment is disproportionately what interviewers remember - treat it as the encore, not an afterthought. Ask 3-5, drawn from all three:
+
+- **Clarify** (mid-interview, in the moment): echo something they said back. "You mentioned [X] - what does that actually look like day to day?"
+- **Connect** (near the end, get them talking about themselves): "What's kept you here?" / "What have you been working on this week that you're excited about?"
+- **Collaborate** (to close, example-based): "If I joined, what's the first real problem you'd hand me?" / "What would make my first 90 days a clear success?"
+
+Always close with: **"Is there anything about my background that gives you hesitation?"** — surfaces the unspoken objection while you can still address it live, rather than losing silently to it later.
+
+Culture questions worth keeping in reserve (use them to avoid disappointment, not as filler):
+- "How would you describe the leadership style on this team?"
+- "What do the people who thrive here have in common?"
+- "What's the balance between building something new and maintaining what exists?"
 
 ## Phone/Video Interview Tips
 - Have STAR examples written out (use this file)
